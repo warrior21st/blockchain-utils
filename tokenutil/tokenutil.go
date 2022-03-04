@@ -3,14 +3,13 @@ package tokenutil
 import (
 	"context"
 	"crypto/ecdsa"
-	"fmt"
 	"math/big"
-	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/shopspring/decimal"
 	"github.com/warrior21st/blockchain-utils/ethutil"
 )
 
@@ -139,6 +138,6 @@ func Transfer(client *ethclient.Client, priv *ecdsa.PrivateKey, token string, to
 	return txId, nil
 }
 
-func logWithTime(msg string) {
-	fmt.Printf("%s %s\n", time.Now().UTC().Add(8*time.Hour).Format("2006-01-02 15:04:05"), msg)
+func ConvertAmount(amount *big.Int, decimals int32) decimal.Decimal {
+	return decimal.NewFromBigInt(amount, 0).DivRound(decimal.NewFromInt(10).Pow(decimal.NewFromInt32(decimals)), decimals)
 }

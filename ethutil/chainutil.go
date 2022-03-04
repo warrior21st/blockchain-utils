@@ -2,13 +2,16 @@ package ethutil
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/big"
+	"strings"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/warrior21st/go-utils/commonutil"
 )
 
 type TxBaseParams struct {
@@ -36,7 +39,7 @@ func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, maxQuer
 	for true {
 		receipt, err := client.TransactionReceipt(context.Background(), common.HexToHash(txId))
 		if receipt == nil {
-			if err == nil {
+			if err == nil && err.Error() == "not found" {
 				LogWithTime(fmt.Sprintf("waiting %s tx %s confirming...", txDesc, txId))
 			} else {
 				LogWithTime(fmt.Sprintf("get %s tx %s receipt err: %s...", txDesc, txId, err.Error()))
@@ -57,6 +60,25 @@ func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, maxQuer
 	}
 
 	return true
+}
+
+func ReadPrivateKeys(filePath string) []string {
+	content := commonutil.ReadFile(filePath)
+	privContentArr := strings.Split(content, "\n")
+
+	l := int64(len(privContentArr))
+	results := make([]string, l)
+
+	for i := int64(0); i < l; i++ {
+		results[i] = strings.Split(privContentArr[i], ",")[0]
+		results[i] = strings.Replace(results[i], "\r", "", -1)
+		results[i] = strings.Replace(results[i], "\t", "", -1)
+		if commonutil.IsNilOrWhiteSpace(results[i]) {
+			panic(errors.New(fmt.Sprintf("index %d is error address", i)))
+		}
+	}
+
+	return results
 }
 
 func LogWithTime(msg string) {
