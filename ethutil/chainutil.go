@@ -50,7 +50,7 @@ func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, maxQuer
 				return false
 			}
 		}
-		if time.Now().UnixMilli()-timeStart >= maxQuerySeconds {
+		if time.Now().UnixMilli()-timeStart >= maxQuerySeconds*1000 {
 			LogWithTime(fmt.Sprintf("get receipt of tx %s time out", txId))
 			return false
 		}
