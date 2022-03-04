@@ -15,10 +15,10 @@ import (
 )
 
 type TxBaseParams struct {
-	chainId  *big.Int
-	nonce    uint64
-	gas      uint64
-	gasPrice *big.Int
+	ChainID  *big.Int
+	Nonce    uint64
+	Gas      uint64
+	GasPrice *big.Int
 }
 
 func GetNextNonce(client *ethclient.Client, account string) uint64 {
