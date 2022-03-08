@@ -67,7 +67,7 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 	ethutil.LogWithTime(fmt.Sprintf("start airdrop accounts count: %d, totalAmount: %s", totalAccount, tokenutil.ConvertAmount(totalAmount, int32(paras.TokenDecimals))))
 
 	nonce := ethutil.GetNextNonce(client, sender)
-	fmt.Println("current nonce: " + strconv.FormatUint(nonce, 10))
+	ethutil.LogWithTime("current nonce: " + strconv.FormatUint(nonce, 10))
 
 	allowanceAmount, err := tokenutil.Allowance(client, paras.Token, sender, paras.AirdropContract)
 	if err != nil {
@@ -97,7 +97,7 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 		if endIndex > totalAccount {
 			endIndex = totalAccount
 		}
-		fmt.Println("starting airdrop for accounts index: " + strconv.Itoa(i) + " - " + strconv.Itoa(endIndex-1) + "...")
+		ethutil.LogWithTime("starting airdrop for accounts index: " + strconv.Itoa(i) + " - " + strconv.Itoa(endIndex-1) + "...")
 		airdropInputData, err := airdropContract.Pack("airdropToken", common.HexToAddress(paras.Token), accounts[i:endIndex], amounts[i:endIndex])
 		if err != nil {
 			panic(err)
@@ -149,7 +149,7 @@ func AirdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big
 	ethutil.LogWithTime(fmt.Sprintf("start airdrop accounts count: %d, totalAmount: %s", totalAccount, tokenutil.ConvertAmount(totalAmount, int32(paras.TokenDecimals))))
 
 	nonce := ethutil.GetNextNonce(client, sender)
-	fmt.Println("current nonce: " + strconv.FormatUint(nonce, 10))
+	ethutil.LogWithTime("current nonce: " + strconv.FormatUint(nonce, 10))
 
 	balance, err := client.BalanceAt(context.Background(), common.HexToAddress(sender), big.NewInt(rpc.LatestBlockNumber.Int64()))
 	if err != nil {
@@ -167,7 +167,7 @@ func AirdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big
 		if endIndex > totalAccount {
 			endIndex = totalAccount
 		}
-		fmt.Println("starting airdrop for accounts index: " + strconv.Itoa(i) + " - " + strconv.Itoa(endIndex-1) + "...")
+		ethutil.LogWithTime("starting airdrop for accounts index: " + strconv.Itoa(i) + " - " + strconv.Itoa(endIndex-1) + "...")
 		airdropInputData, err := airdropContract.Pack("airdropETH", accounts[i:endIndex], amounts[i:endIndex])
 		if err != nil {
 			panic(err)
@@ -209,7 +209,7 @@ func ReadAirdropList(filePath string, tokenDecimals int64) ([]common.Address, []
 
 		totalAmount = totalAmount.Add(amountDecimal)
 	}
-	fmt.Println("readed address count: " + strconv.Itoa(len(accounts)) + ", total amount: " + totalAmount.String())
+	ethutil.LogWithTime("readed address count: " + strconv.Itoa(len(accounts)) + ", total amount: " + totalAmount.String())
 
 	return accounts, amounts
 }
