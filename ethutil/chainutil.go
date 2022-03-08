@@ -62,7 +62,7 @@ func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, maxQuer
 	return true
 }
 
-func GetChainId(client *ethclient.Client) *big.Int {
+func GetChainID(client *ethclient.Client) *big.Int {
 	chainId, err := client.ChainID(context.Background())
 	for err != nil {
 		LogWithTime(fmt.Sprintf("get chainId error: %s,sleep 1s...", err.Error()))

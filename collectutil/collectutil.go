@@ -64,7 +64,7 @@ func CollectETHs(collectParams *CollectTokenParams, privs []string, detailSaveFi
 		panic(err)
 	}
 
-	chainId := ethutil.GetChainId(client)
+	chainId := ethutil.GetChainID(client)
 	decimals := 18
 
 	total := len(privs)

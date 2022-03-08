@@ -51,11 +51,7 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 	}
 	defer client.Close()
 
-	chainId, err := client.ChainID(context.Background())
-	for err != nil {
-		ethutil.LogWithTime(fmt.Sprintf("get chainId error: %s,sleep 1s...", err.Error()))
-		chainId, err = client.ChainID(context.Background())
-	}
+	chainId := ethutil.GetChainID(client)
 
 	ethutil.LogWithTime(fmt.Sprintf("airdrop chainId: %s", chainId.String()))
 

@@ -125,10 +125,7 @@ func Transfer(client *ethclient.Client, priv *ecdsa.PrivateKey, token string, to
 	if err != nil {
 		return "", err
 	}
-	chainId, err := client.ChainID(context.Background())
-	if err != nil {
-		return "", err
-	}
+	chainId := ethutil.GetChainID(client)
 
 	tx := ethutil.NewTx(nonce, token, big.NewInt(0), uint64(gas), gasPrice, inputData)
 	signedTx := ethutil.SignTx(priv, tx, chainId)
