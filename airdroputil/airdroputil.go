@@ -187,7 +187,7 @@ func ReadAirdropList(filePath string, tokenDecimals int64) ([]common.Address, []
 	total := len(list)
 	accounts := make([]common.Address, total)
 	amounts := make([]*big.Int, total)
-	totalAmount := big.NewInt(0)
+	totalAmount := decimal.Zero
 	for i := 0; i < total; i++ {
 		detail := strings.Replace(strings.TrimSpace(list[i]), "\r", "", -1)
 		addrStr := strings.TrimSpace(strings.Split(detail, ",")[0])
@@ -206,6 +206,8 @@ func ReadAirdropList(filePath string, tokenDecimals int64) ([]common.Address, []
 
 		accounts[i] = common.HexToAddress(addrStr)
 		amounts[i] = amountDecimal.Mul(precision).BigInt()
+
+		totalAmount = totalAmount.Add(amountDecimal)
 	}
 	fmt.Println("readed address count: " + strconv.Itoa(len(accounts)) + ", total amount: " + totalAmount.String())
 
