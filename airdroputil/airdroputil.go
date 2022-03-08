@@ -111,12 +111,12 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 	}
 }
 
-func airdropETHsByFile(paras *AirdropParams, airdropListFile string) {
+func AirdropETHsByFile(paras *AirdropParams, airdropListFile string) {
 	accounts, amounts := ReadAirdropList(airdropListFile, paras.TokenDecimals)
-	airdropETHs(paras, accounts, amounts)
+	AirdropETHs(paras, accounts, amounts)
 }
 
-func airdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big.Int) {
+func AirdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big.Int) {
 	prv := ethutil.HexToECDSAPrivateKey(paras.SenderPrv)
 	sender := ethutil.PubkeyToAddress(&prv.PublicKey)
 	gas := uint(paras.GasLimit)
