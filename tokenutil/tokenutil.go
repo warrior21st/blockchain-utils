@@ -109,12 +109,12 @@ func erc20Send(client *ethclient.Client, chainId *big.Int, priv *ecdsa.PrivateKe
 	return txId, nil
 }
 
-func Approve(client *ethclient.Client, chainId *big.Int, priv *ecdsa.PrivateKey, token string, to string, nonce uint64, gas uint64, gasPrice *big.Int) (string, error) {
+func Approve(client *ethclient.Client, chainId *big.Int, priv *ecdsa.PrivateKey, token string, spender string, nonce uint64, gas uint64, gasPrice *big.Int) (string, error) {
 	bi := big.NewInt(2)
 	bi.Exp(bi, big.NewInt(256), nil)
 	bi.Sub(bi, big.NewInt(1))
 
-	return erc20Send(client, chainId, priv, token, "approve", nonce, gas, gasPrice)
+	return erc20Send(client, chainId, priv, token, "approve", nonce, gas, gasPrice, common.HexToAddress(spender), bi)
 }
 
 func Transfer(client *ethclient.Client, priv *ecdsa.PrivateKey, token string, to string, nonce uint64, gas int64, gasPrice *big.Int) (string, error) {
