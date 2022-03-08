@@ -39,7 +39,7 @@ func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, maxQuer
 	for true {
 		receipt, err := client.TransactionReceipt(context.Background(), common.HexToHash(txId))
 		if receipt == nil {
-			if err == nil && err.Error() == "not found" {
+			if err == nil || err.Error() == "not found" {
 				LogWithTime(fmt.Sprintf("waiting %s tx %s confirming...", txDesc, txId))
 			} else {
 				LogWithTime(fmt.Sprintf("get %s tx %s receipt err: %s...", txDesc, txId, err.Error()))
