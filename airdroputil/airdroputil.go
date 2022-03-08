@@ -107,7 +107,7 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 		airdropTxId := ethutil.GetRawTxHash(airdropSignedTx)
 		ethutil.SendRawTx(client, airdropSignedTx)
 
-		ethutil.WaitTxReceipt(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount), 3600)
+		ethutil.WaitTxReceipt(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount-1), 3600)
 	}
 }
 
@@ -172,7 +172,7 @@ func AirdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big
 		airdropTxId := ethutil.GetRawTxHash(airdropSignedTx)
 		ethutil.SendRawTx(client, airdropSignedTx)
 
-		ethutil.WaitTxReceipt(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount), 3600)
+		ethutil.WaitTxReceipt(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount-1), 3600)
 	}
 }
 
