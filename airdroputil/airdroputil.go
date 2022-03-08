@@ -1,4 +1,4 @@
-package airdropuitl
+package airdroputil
 
 import (
 	"context"
