@@ -35,7 +35,7 @@ func GetNextNonce(client *ethclient.Client, account string) uint64 {
 }
 
 func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, maxQuerySeconds int64) bool {
-	timeStart := time.Now().UnixMilli()
+	timeStart := time.Now().Unix()
 	for true {
 		receipt, err := client.TransactionReceipt(context.Background(), common.HexToHash(txId))
 		if receipt == nil {
@@ -53,7 +53,7 @@ func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, maxQuer
 				return false
 			}
 		}
-		if time.Now().UnixMilli()-timeStart >= maxQuerySeconds*1000 {
+		if time.Now().Unix()-timeStart >= maxQuerySeconds {
 			LogWithTime(fmt.Sprintf("get receipt of tx %s time out", txId))
 			return false
 		}
