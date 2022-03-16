@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"math"
 	"math/big"
 	"strconv"
 	"strings"
@@ -22,6 +23,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 var (
@@ -436,4 +438,20 @@ func Hex2Bytes(s string) []byte {
 // has0xPrefix validates str begins with '0x' or '0X'.
 func has0xPrefix(str string) bool {
 	return len(str) >= 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X')
+}
+
+func FromWei(amount *big.Int) decimal.Decimal {
+	return decimal.NewFromBigInt(amount, 0).DivRound(decimal.NewFromInt(1e18), 18)
+}
+
+func ToWei(amount decimal.Decimal) *big.Int {
+	return amount.Mul(decimal.NewFromInt(1e18)).BigInt()
+}
+
+func FromWeiWithDecimals(amount *big.Int, decimals int32) decimal.Decimal {
+	return decimal.NewFromBigInt(amount, 0).DivRound(decimal.NewFromInt(int64(math.Pow(10, float64(decimals)))), decimals)
+}
+
+func ToWeiWithDecimals(amount decimal.Decimal, decimals int32) *big.Int {
+	return amount.Mul(decimal.NewFromInt(int64(math.Pow(10, float64(decimals))))).BigInt()
 }
