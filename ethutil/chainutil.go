@@ -91,6 +91,17 @@ func ReadPrivateKeys(filePath string) []string {
 	return results
 }
 
+func GetBalance(client *ethclient.Client, account string) *big.Int {
+	balance, err := client.BalanceAt(context.Background(), common.HexToAddress(account), big.NewInt(rpc.LatestBlockNumber.Int64()))
+	for err != nil {
+		LogWithTime(fmt.Sprintf("get balance error: %s,sleep 1s...", err.Error()))
+		time.Sleep(time.Second)
+		balance, err = client.BalanceAt(context.Background(), common.HexToAddress(account), big.NewInt(rpc.LatestBlockNumber.Int64()))
+	}
+
+	return balance
+}
+
 func LogWithTime(msg string) {
 	fmt.Printf("%s %s\n", time.Now().UTC().Add(8*time.Hour).Format("2006-01-02 15:04:05"), msg)
 }
