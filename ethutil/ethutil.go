@@ -455,3 +455,11 @@ func FromWeiWithDecimals(amount *big.Int, decimals int32) decimal.Decimal {
 func ToWeiWithDecimals(amount decimal.Decimal, decimals int32) *big.Int {
 	return amount.Mul(decimal.NewFromInt(int64(math.Pow(10, float64(decimals))))).BigInt()
 }
+
+func GenNewPrivateKey() string {
+	k, err := crypto.GenerateKey()
+	if err != nil {
+		panic(err)
+	}
+	return hex.EncodeToString(crypto.FromECDSA(k))
+}
