@@ -163,11 +163,18 @@ func AirdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big
 			endIndex = totalAccount
 		}
 		ethutil.LogWithTime("starting airdrop for accounts index: " + strconv.Itoa(i) + " - " + strconv.Itoa(endIndex-1) + "...")
+
+		periodAmounts := amounts[i:endIndex]
+		periodTotalAmount := big.NewInt(0)
+		for j := 0; j < len(periodAmounts); j++ {
+			periodTotalAmount = periodTotalAmount.Add(periodTotalAmount, periodAmounts[j])
+		}
+
 		airdropInputData, err := airdropContract.Pack("airdropETH", accounts[i:endIndex], amounts[i:endIndex])
 		if err != nil {
 			panic(err)
 		}
-		airdropTx := ethutil.NewTx(nonce, paras.AirdropContract, totalAmount, uint64(gas), gasPrice, airdropInputData)
+		airdropTx := ethutil.NewTx(nonce, paras.AirdropContract, periodTotalAmount, uint64(gas), gasPrice, airdropInputData)
 		airdropSignedTx := ethutil.SignTx(prv, airdropTx, chainId)
 		airdropTxId := ethutil.GetRawTxHash(airdropSignedTx)
 		ethutil.SendRawTx(client, airdropSignedTx)
