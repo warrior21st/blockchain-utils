@@ -105,7 +105,11 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 		airdropTx := ethutil.NewTx(nonce, paras.AirdropContract, big.NewInt(0), uint64(gas), gasPrice, airdropInputData)
 		airdropSignedTx := ethutil.SignTx(prv, airdropTx, chainId)
 		airdropTxId := ethutil.GetRawTxHash(airdropSignedTx)
-		ethutil.SendRawTx(client, airdropSignedTx)
+		err = ethutil.SendRawTx(client, airdropSignedTx)
+		if err != nil {
+			panic(err)
+		}
+		ethutil.LogWithTime(fmt.Sprintf("sended airdrop Tokens tx: %s...", airdropTxId))
 
 		ethutil.WaitTxReceipt(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount-1), 3600)
 	}
@@ -177,7 +181,11 @@ func AirdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big
 		airdropTx := ethutil.NewTx(nonce, paras.AirdropContract, periodTotalAmount, uint64(gas), gasPrice, airdropInputData)
 		airdropSignedTx := ethutil.SignTx(prv, airdropTx, chainId)
 		airdropTxId := ethutil.GetRawTxHash(airdropSignedTx)
-		ethutil.SendRawTx(client, airdropSignedTx)
+		err = ethutil.SendRawTx(client, airdropSignedTx)
+		if err != nil {
+			panic(err)
+		}
+		ethutil.LogWithTime(fmt.Sprintf("sended airdrop ETHs tx: %s...", airdropTxId))
 
 		ethutil.WaitTxReceipt(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount-1), 3600)
 	}
