@@ -83,8 +83,12 @@ func ReadPrivateKeys(filePath string) []string {
 		results[i] = strings.Split(privContentArr[i], ",")[0]
 		results[i] = strings.Replace(results[i], "\r", "", -1)
 		results[i] = strings.Replace(results[i], "\t", "", -1)
-		if commonutil.IsNilOrWhiteSpace(results[i]) {
+
+		if commonutil.IsNilOrWhiteSpace(results[i]) || (len(results[i]) != 66 && len(results[i]) != 64) {
 			panic(errors.New(fmt.Sprintf("index %d is error address", i)))
+		}
+		if strings.EqualFold(results[i][0:2], "0x") {
+			results[i] = results[i][2:]
 		}
 	}
 
