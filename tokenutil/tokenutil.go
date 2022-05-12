@@ -117,9 +117,8 @@ func Approve(client *ethclient.Client, chainId *big.Int, priv *ecdsa.PrivateKey,
 	return erc20Send(client, chainId, priv, token, "approve", nonce, gas, gasPrice, common.HexToAddress(spender), bi)
 }
 
-func Transfer(client *ethclient.Client, priv *ecdsa.PrivateKey, token string, to string, nonce uint64, gas int64, gasPrice *big.Int) (string, error) {
+func Transfer(client *ethclient.Client, priv *ecdsa.PrivateKey, token string, to string, transferAmount *big.Int, nonce uint64, gas int64, gasPrice *big.Int) (string, error) {
 	erc20ContractAbi := ethutil.GetContractAbi(ERC20Abi)
-	transferAmount := big.NewInt(0).Mul(big.NewInt(100), big.NewInt(1e18))
 
 	inputData, err := erc20ContractAbi.Pack("transfer", common.HexToAddress(to), transferAmount)
 	if err != nil {
