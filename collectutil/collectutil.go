@@ -48,7 +48,7 @@ func CollectTokens(collectParams *CollectTokenParams, privs []string, detailSave
 			nonce := ethutil.GetNextNonce(client, addr)
 			ethutil.LogWithTime(fmt.Sprintf("%s current nonce: %d", addr, nonce))
 
-			txId, _ := tokenutil.Transfer(client, priv, collectParams.Token, collectParams.IncomeTo, nonce, tokenutil.TransferERC20DefaultGas, big.NewInt(int64(collectParams.GasPriceGwei*params.GWei)))
+			txId, _ := tokenutil.Transfer(client, priv, collectParams.Token, collectParams.IncomeTo, balance, nonce, tokenutil.TransferERC20DefaultGas, big.NewInt(int64(collectParams.GasPriceGwei*params.GWei)))
 			result := ethutil.WaitTxReceipt(client, txId, fmt.Sprintf("income %d %s from %s", tokenutil.ConvertAmount(balance, int32(decimals)), collectParams.TokenSymbol, addr), 3600)
 			if !result {
 				panic("exec collect tx error")
