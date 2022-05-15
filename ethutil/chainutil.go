@@ -2,7 +2,6 @@ package ethutil
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math/big"
 	"strings"
@@ -34,12 +33,12 @@ func GetNextNonce(client *ethclient.Client, account string) uint64 {
 	return nonce
 }
 
-func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, maxQuerySeconds int64) bool {
+func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, timeoutSeconds int64) bool {
 	timeStart := time.Now().Unix()
-	for true {
+	for time.Now().Unix()-timeStart < timeoutSeconds {
 		receipt, err := client.TransactionReceipt(context.Background(), common.HexToHash(txId))
 		if receipt == nil {
-			if err == nil || err.Error() == "not found" {
+			if err == nil || strings.EqualFold(err.Error(), "not found") {
 				LogWithTime(fmt.Sprintf("waiting %s tx %s confirming...", txDesc, txId))
 			} else {
 				LogWithTime(fmt.Sprintf("get %s tx %s receipt err: %s...", txDesc, txId, err.Error()))
@@ -53,10 +52,10 @@ func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, maxQuer
 				return false
 			}
 		}
-		if time.Now().Unix()-timeStart >= maxQuerySeconds {
-			LogWithTime(fmt.Sprintf("get receipt of tx %s time out", txId))
-			return false
-		}
+	}
+	if time.Now().Unix()-timeStart >= timeoutSeconds {
+		LogWithTime(fmt.Sprintf("get receipt of tx %s time out", txId))
+		return false
 	}
 
 	return true
@@ -83,8 +82,8 @@ func ReadPrivateKeys(filePath string) []string {
 		results[i] = strings.Split(privContentArr[i], ",")[0]
 		results[i] = strings.Replace(results[i], "\r", "", -1)
 		results[i] = strings.Replace(results[i], "\t", "", -1)
-		if commonutil.IsNilOrWhiteSpace(results[i]) {
-			panic(errors.New(fmt.Sprintf("index %d is error address", i)))
+		if !common.IsHexAddress(results[i]) {
+			panic(fmt.Errorf("index %d is error address", i))
 		}
 	}
 
