@@ -82,7 +82,7 @@ func ReadPrivateKeys(filePath string) []string {
 		results[i] = strings.Split(privContentArr[i], ",")[0]
 		results[i] = strings.Replace(results[i], "\r", "", -1)
 		results[i] = strings.Replace(results[i], "\t", "", -1)
-		if !common.IsHexAddress(results[i]) {
+		if commonutil.IsNilOrWhiteSpace(results[i]) {
 			panic(fmt.Errorf("index %d is error address", i))
 		}
 	}
