@@ -78,6 +78,8 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 		if err != nil {
 			panic(err)
 		}
+
+		ethutil.LogWithTime(fmt.Sprintf("sended approve tx: %s...", txId))
 		ethutil.WaitTxReceipt(client, txId, "approve token for airdrop contract", 3600)
 	}
 
