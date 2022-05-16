@@ -223,3 +223,44 @@ func ReadAirdropList(filePath string, tokenDecimals int64) ([]common.Address, []
 
 	return accounts, amounts
 }
+
+func ReadAirdropAddressesOnly(filePath string) []common.Address {
+	list := strings.Split(commonutil.ReadFile(filePath), "\n")
+	accounts := make([]common.Address, 0)
+
+	for i := 0; i < len(list); i++ {
+		detail := strings.TrimSpace(list[i])
+		addrStr := strings.Replace(detail, "\r", "", -1)
+		addrStr = strings.ToLower(addrStr)
+		if !common.IsHexAddress(addrStr) {
+			ethutil.LogWithTime(fmt.Sprintf("address index %d invalid", i))
+			continue
+		}
+
+		accounts = append(accounts, common.HexToAddress(addrStr))
+	}
+
+	total := len(accounts)
+	ethutil.LogWithTime(fmt.Sprintf("valid addr of total: %d / %d", total, len(list)))
+
+	return accounts
+}
+
+func TrimContractAccount(client *ethclient.Client, allAccountsTemp []common.Address) []common.Address {
+	allAccounts := make([]common.Address, 0)
+	for i := range allAccountsTemp {
+		ethutil.LogWithTime(fmt.Sprintf("check address's code length progress %d / %d", i+1, len(allAccountsTemp)))
+		b, err := client.CodeAt(context.Background(), allAccountsTemp[i], big.NewInt(rpc.LatestBlockNumber.Int64()))
+		if err != nil {
+			panic(err)
+		}
+		if len(b) > 0 {
+			ethutil.LogWithTime(fmt.Sprintf("%s is contract address,skip...", allAccountsTemp[i].Hex()))
+			continue
+		}
+
+		allAccounts = append(allAccounts, allAccountsTemp[i])
+	}
+
+	return allAccounts
+}
