@@ -291,8 +291,8 @@ func ReadNFTAirdropAddresssWithAmount(filePath string) (addrs []common.Address, 
 			panic(fmt.Sprintf("invalid amount: index %d", i))
 		}
 
-		accounts[i] = common.HexToAddress(addrStr)
-		amounts[i] = amount
+		accounts = append(accounts, common.HexToAddress(addrStr))
+		amounts = append(amounts, amount)
 
 		totalAmount = totalAmount + amount
 
