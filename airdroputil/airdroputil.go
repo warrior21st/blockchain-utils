@@ -266,3 +266,39 @@ func TrimContractAccount(client *ethclient.Client, allAccountsTemp []common.Addr
 
 	return allAccounts
 }
+
+func ReadNFTAirdropAddresssWithAmount(filePath string) (addrs []common.Address, amount []int64) {
+	list := strings.Split(commonutil.ReadFile(filePath), "\n")
+	total := 0
+	accounts := make([]common.Address, total)
+	amounts := make([]int64, total)
+	totalAmount := int64(0)
+	for i := 0; i < len(list); i++ {
+		detail := strings.Replace(strings.TrimSpace(list[i]), "\r", "", -1)
+		arr := strings.Split(detail, ",")
+		if commonutil.IsNilOrWhiteSpace(arr[0]) || commonutil.IsNilOrWhiteSpace(arr[1]) {
+			panic(fmt.Sprintf("invalid address or amount: index %d", i))
+		}
+
+		addrStr := strings.TrimSpace(arr[0])
+		amountStr := strings.TrimSpace(arr[1])
+		amount := commonutil.ParseInt64(amountStr)
+
+		if !common.IsHexAddress(addrStr) {
+			panic(fmt.Sprintf("invalid address: index %d", i))
+		}
+		if amount <= 0 {
+			panic(fmt.Sprintf("invalid amount: index %d", i))
+		}
+
+		accounts[i] = common.HexToAddress(addrStr)
+		amounts[i] = amount
+
+		totalAmount = totalAmount + amount
+
+		total = i + 1
+	}
+	ethutil.LogWithTime("readed address count: " + strconv.Itoa(len(accounts)) + ", total amount: " + commonutil.Int64ToString(totalAmount))
+
+	return accounts, amounts
+}
