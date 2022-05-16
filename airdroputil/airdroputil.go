@@ -269,9 +269,8 @@ func TrimContractAccount(client *ethclient.Client, allAccountsTemp []common.Addr
 
 func ReadNFTAirdropAddresssWithAmount(filePath string) (addrs []common.Address, amount []int64) {
 	list := strings.Split(commonutil.ReadFile(filePath), "\n")
-	total := 0
-	accounts := make([]common.Address, total)
-	amounts := make([]int64, total)
+	accounts := make([]common.Address, 0)
+	amounts := make([]int64, 0)
 	totalAmount := int64(0)
 	for i := 0; i < len(list); i++ {
 		detail := strings.Replace(strings.TrimSpace(list[i]), "\r", "", -1)
@@ -295,8 +294,6 @@ func ReadNFTAirdropAddresssWithAmount(filePath string) (addrs []common.Address, 
 		amounts = append(amounts, amount)
 
 		totalAmount = totalAmount + amount
-
-		total = i + 1
 	}
 	ethutil.LogWithTime("readed address count: " + strconv.Itoa(len(accounts)) + ", total amount: " + commonutil.Int64ToString(totalAmount))
 
