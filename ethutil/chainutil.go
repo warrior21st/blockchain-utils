@@ -105,6 +105,20 @@ func GetBalance(client *ethclient.Client, account string) *big.Int {
 	return balance
 }
 
+func IsContract(client *ethclient.Client, account string) bool {
+	addr := common.HexToAddress(account)
+	codes, err := client.CodeAt(context.Background(), addr, big.NewInt(-1))
+	for err != nil {
+		LogWithTime(fmt.Sprintf("get balance error: %s,sleep 1s...", err.Error()))
+		time.Sleep(time.Second)
+		codes, err = client.CodeAt(context.Background(), addr, big.NewInt(-1))
+	}
+	if len(codes) > 0 {
+		LogWithTime(fmt.Sprintf("%s is contract address,skip...", account))
+	}
+	return len(codes) > 0
+}
+
 func LogWithTime(msg string) {
 	fmt.Printf("%s %s\n", time.Now().UTC().Add(8*time.Hour).Format("2006-01-02 15:04:05"), msg)
 }
