@@ -109,7 +109,7 @@ func IsContract(client *ethclient.Client, account string) bool {
 	addr := common.HexToAddress(account)
 	codes, err := client.CodeAt(context.Background(), addr, big.NewInt(-1))
 	for err != nil {
-		LogWithTime(fmt.Sprintf("get balance error: %s,sleep 1s...", err.Error()))
+		LogWithTime(fmt.Sprintf("request codeAt error: %s,sleep 1s...", err.Error()))
 		time.Sleep(time.Second)
 		codes, err = client.CodeAt(context.Background(), addr, big.NewInt(-1))
 	}
