@@ -112,7 +112,7 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 		}
 		ethutil.LogWithTime(fmt.Sprintf("sended airdrop Tokens tx: %s...", airdropTxId))
 
-		ethutil.WaitTxReceiptSuccess(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount-1), 0)\
+		ethutil.WaitTxReceiptSuccess(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount-1), 0)
 
 		nonce++
 	}
