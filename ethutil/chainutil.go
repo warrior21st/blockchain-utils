@@ -3,6 +3,7 @@ package ethutil
 import (
 	"context"
 	"fmt"
+	"math"
 	"math/big"
 	"strings"
 	"time"
@@ -34,7 +35,11 @@ func GetNextNonce(client *ethclient.Client, account string) uint64 {
 }
 
 func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, timeoutSeconds int64) bool {
+	LogWithTime(fmt.Sprintf("querying tx %s receipt...", txId))
 	timeStart := time.Now().Unix()
+	if timeoutSeconds == 0 {
+		timeoutSeconds = math.MaxInt64
+	}
 	for time.Now().Unix()-timeStart < timeoutSeconds {
 		receipt, err := client.TransactionReceipt(context.Background(), common.HexToHash(txId))
 		if receipt == nil {
@@ -59,6 +64,13 @@ func WaitTxReceipt(client *ethclient.Client, txId string, txDesc string, timeout
 	}
 
 	return true
+}
+
+func WaitTxReceiptSuccess(client *ethclient.Client, txId string, txDesc string, timeoutSeconds int64) {
+	b := WaitTxReceipt(client, txId, txDesc, timeoutSeconds)
+	if !b {
+		panic(fmt.Errorf("tx %s exec failed", txId))
+	}
 }
 
 func GetChainID(client *ethclient.Client) *big.Int {

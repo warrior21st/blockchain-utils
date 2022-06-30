@@ -37,13 +37,13 @@ func Symbol(client *ethclient.Client, token string) (string, error) {
 	return string(result), nil
 }
 
-func Decimals(client *ethclient.Client, token string) (int64, error) {
+func Decimals(client *ethclient.Client, token string) (int32, error) {
 	result, err := erc20Call(client, token, "decimals")
 	if err != nil {
 		return 0, err
 	}
 
-	return big.NewInt(0).SetBytes(result).Int64(), nil
+	return int32(big.NewInt(0).SetBytes(result).Int64()), nil
 }
 
 func TotalSupply(client *ethclient.Client, token string) (*big.Int, error) {

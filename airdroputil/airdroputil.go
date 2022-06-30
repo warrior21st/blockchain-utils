@@ -80,7 +80,9 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 		}
 
 		ethutil.LogWithTime(fmt.Sprintf("sended approve tx: %s...", txId))
-		ethutil.WaitTxReceipt(client, txId, "approve token for airdrop contract", 3600)
+		ethutil.WaitTxReceiptSuccess(client, txId, "approve token for airdrop contract", 0)
+
+		nonce++
 	}
 
 	balance, err := tokenutil.BalanceOf(client, paras.Token, sender)
@@ -94,7 +96,6 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 	each := paras.AccountsPerTx
 	for i := 0; i < totalAccount; i += each {
 
-		nonce := ethutil.GetNextNonce(client, sender)
 		endIndex := i + each
 		if endIndex > totalAccount {
 			endIndex = totalAccount
@@ -113,7 +114,9 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 		}
 		ethutil.LogWithTime(fmt.Sprintf("sended airdrop Tokens tx: %s...", airdropTxId))
 
-		ethutil.WaitTxReceipt(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount-1), 3600)
+		ethutil.WaitTxReceiptSuccess(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount-1), 0)\
+
+		nonce++
 	}
 }
 
@@ -149,9 +152,6 @@ func AirdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big
 	}
 	ethutil.LogWithTime(fmt.Sprintf("start airdrop accounts count: %d, totalAmount: %s", totalAccount, tokenutil.ConvertAmount(totalAmount, int32(paras.TokenDecimals))))
 
-	nonce := ethutil.GetNextNonce(client, sender)
-	ethutil.LogWithTime("current nonce: " + strconv.FormatUint(nonce, 10))
-
 	balance, err := client.BalanceAt(context.Background(), common.HexToAddress(sender), big.NewInt(rpc.LatestBlockNumber.Int64()))
 	if err != nil {
 		panic(err)
@@ -160,10 +160,11 @@ func AirdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big
 		panic(errors.New("insufficient sender balance"))
 	}
 
+	nonce := ethutil.GetNextNonce(client, sender)
+	ethutil.LogWithTime("current nonce: " + strconv.FormatUint(nonce, 10))
 	each := paras.AccountsPerTx
 	for i := 0; i < totalAccount; i += each {
 
-		nonce := ethutil.GetNextNonce(client, sender)
 		endIndex := i + each
 		if endIndex > totalAccount {
 			endIndex = totalAccount
@@ -189,7 +190,9 @@ func AirdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big
 		}
 		ethutil.LogWithTime(fmt.Sprintf("sended airdrop ETHs tx: %s...", airdropTxId))
 
-		ethutil.WaitTxReceipt(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount-1), 3600)
+		ethutil.WaitTxReceiptSuccess(client, airdropTxId, fmt.Sprintf("airdrop for accounts index: %d - %d / %d", i, endIndex-1, totalAccount-1), 0)
+
+		nonce++
 	}
 }
 

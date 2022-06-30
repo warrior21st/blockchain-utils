@@ -15,7 +15,6 @@ type CollectTokenParams struct {
 	Endpoint     string
 	GasPriceGwei float64
 	Token        string
-	TokenSymbol  string
 	IncomeTo     string
 }
 
@@ -36,23 +35,25 @@ func CollectTokens(collectParams *CollectTokenParams, privs []string, detailSave
 		panic(err)
 	}
 
+	tokenSymbol, err := tokenutil.Symbol(client, collectParams.Token)
+	if err != nil {
+		panic(err)
+	}
+
 	total := len(privs)
 	for i := 0; i < total; i++ {
 		priv := ethutil.HexToECDSAPrivateKey(privs[i])
 		addr := ethutil.PubkeyToAddress(&priv.PublicKey)
 		balance, _ := tokenutil.BalanceOf(client, collectParams.Token, addr)
 		if balance.Cmp(big.NewInt(0)) == 1 {
-			ethutil.LogWithTime(fmt.Sprintf("%s checked %s %s", addr, tokenutil.ConvertAmount(balance, int32(decimals)), collectParams.TokenSymbol))
+			ethutil.LogWithTime(fmt.Sprintf("%s checked %s %s", addr, tokenutil.ConvertAmount(balance, decimals), tokenSymbol))
 			commonutil.AppendToFile(detailSaveFile, privs[i]+"\n")
 
 			nonce := ethutil.GetNextNonce(client, addr)
 			ethutil.LogWithTime(fmt.Sprintf("%s current nonce: %d", addr, nonce))
 
 			txId, _ := tokenutil.Transfer(client, priv, collectParams.Token, collectParams.IncomeTo, balance, nonce, tokenutil.TransferERC20DefaultGas, big.NewInt(int64(collectParams.GasPriceGwei*params.GWei)))
-			result := ethutil.WaitTxReceipt(client, txId, fmt.Sprintf("income %d %s from %s", tokenutil.ConvertAmount(balance, int32(decimals)), collectParams.TokenSymbol, addr), 3600)
-			if !result {
-				panic("exec collect tx error")
-			}
+			ethutil.WaitTxReceiptSuccess(client, txId, fmt.Sprintf("income %d %s from %s", tokenutil.ConvertAmount(balance, decimals), tokenSymbol, addr), 0)
 		}
 		ethutil.LogWithTime(fmt.Sprintf("scan progress %d/%d...", i, total-1))
 	}
@@ -60,6 +61,10 @@ func CollectTokens(collectParams *CollectTokenParams, privs []string, detailSave
 
 func CollectETHs(collectParams *CollectTokenParams, privs []string, detailSaveFile string) {
 	client, err := ethclient.Dial(collectParams.Endpoint)
+	if err != nil {
+		panic(err)
+	}
+	tokenSymbol, err := tokenutil.Symbol(client, collectParams.Token)
 	if err != nil {
 		panic(err)
 	}
@@ -73,7 +78,7 @@ func CollectETHs(collectParams *CollectTokenParams, privs []string, detailSaveFi
 		addr := ethutil.PubkeyToAddress(&priv.PublicKey)
 		balance, _ := tokenutil.BalanceOf(client, collectParams.Token, addr)
 		if balance.Cmp(big.NewInt(0)) == 1 {
-			ethutil.LogWithTime(fmt.Sprintf("%s checked %s %s", addr, tokenutil.ConvertAmount(balance, int32(decimals)), collectParams.TokenSymbol))
+			ethutil.LogWithTime(fmt.Sprintf("%s checked %s %s", addr, tokenutil.ConvertAmount(balance, int32(decimals)), tokenSymbol))
 			commonutil.AppendToFile(detailSaveFile, privs[i]+"\n")
 
 			nonce := ethutil.GetNextNonce(client, addr)
@@ -90,10 +95,7 @@ func CollectETHs(collectParams *CollectTokenParams, privs []string, detailSaveFi
 			txId := ethutil.GetRawTxHash(signedIncomeTx)
 			ethutil.SendRawTx(client, signedIncomeTx)
 
-			result := ethutil.WaitTxReceipt(client, txId, fmt.Sprintf("income %d %s from %s", tokenutil.ConvertAmount(balance, int32(decimals)), collectParams.TokenSymbol, addr), 3600)
-			if !result {
-				panic("exec income tx error")
-			}
+			ethutil.WaitTxReceiptSuccess(client, txId, fmt.Sprintf("income %d %s from %s", tokenutil.ConvertAmount(balance, int32(decimals)), tokenSymbol, addr), 0)
 		}
 		ethutil.LogWithTime(fmt.Sprintf("income progress %d/%d...", i, total-1))
 	}
