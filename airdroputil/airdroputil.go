@@ -67,8 +67,6 @@ func AirdropTokens(paras *AirdropParams, accounts []common.Address, amounts []*b
 	ethutil.LogWithTime(fmt.Sprintf("start airdrop accounts count: %d, totalAmount: %s", totalAccount, tokenutil.ConvertAmount(totalAmount, int32(paras.TokenDecimals))))
 
 	nonce := ethutil.GetNextNonce(client, sender)
-	ethutil.LogWithTime("current nonce: " + strconv.FormatUint(nonce, 10))
-
 	allowanceAmount, err := tokenutil.Allowance(client, paras.Token, sender, paras.AirdropContract)
 	if err != nil {
 		panic(err)
@@ -161,7 +159,6 @@ func AirdropETHs(paras *AirdropParams, accounts []common.Address, amounts []*big
 	}
 
 	nonce := ethutil.GetNextNonce(client, sender)
-	ethutil.LogWithTime("current nonce: " + strconv.FormatUint(nonce, 10))
 	each := paras.AccountsPerTx
 	for i := 0; i < totalAccount; i += each {
 
