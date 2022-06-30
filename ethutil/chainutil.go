@@ -126,7 +126,7 @@ func IsContract(client *ethclient.Client, account string) bool {
 		codes, err = client.CodeAt(context.Background(), addr, big.NewInt(-1))
 	}
 	if len(codes) > 0 {
-		LogWithTime(fmt.Sprintf("%s is contract address,skip...", account))
+		LogWithTime(fmt.Sprintf("%s is contract address...", account))
 	}
 	return len(codes) > 0
 }
