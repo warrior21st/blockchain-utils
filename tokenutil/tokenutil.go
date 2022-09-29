@@ -25,7 +25,12 @@ func Name(client *ethclient.Client, token string) (string, error) {
 		return "", err
 	}
 
-	return string(result), nil
+	f, err := ethutil.GetContractAbi(ERC20Abi).Methods["name"].Outputs.Unpack(result)
+	if err != nil {
+		return "", err
+	}
+
+	return f[0].(string), nil
 }
 
 func Symbol(client *ethclient.Client, token string) (string, error) {
@@ -34,7 +39,12 @@ func Symbol(client *ethclient.Client, token string) (string, error) {
 		return "", err
 	}
 
-	return string(result), nil
+	f, err := ethutil.GetContractAbi(ERC20Abi).Methods["symbol"].Outputs.Unpack(result)
+	if err != nil {
+		return "", err
+	}
+
+	return f[0].(string), nil
 }
 
 func Decimals(client *ethclient.Client, token string) (int32, error) {
